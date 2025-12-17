@@ -60,14 +60,26 @@ export default function Home() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        const safeJsonParse = async (res: Response) => {
+          const contentType = res.headers.get('content-type')
+          if (!contentType || !contentType.includes('application/json')) {
+            return []
+          }
+          try {
+            return await res.json()
+          } catch {
+            return []
+          }
+        }
+
         const [clientsRes, projectsRes, invoicesRes] = await Promise.all([
           fetch('/api/clients'),
           fetch('/api/projects'),
           fetch('/api/billing/invoices'),
         ])
-        const clients = await clientsRes.json()
-        const projects = await projectsRes.json()
-        const invoices = await invoicesRes.json()
+        const clients = await safeJsonParse(clientsRes)
+        const projects = await safeJsonParse(projectsRes)
+        const invoices = await safeJsonParse(invoicesRes)
         setStats({
           clients: Array.isArray(clients) ? clients.length : 0,
           projects: Array.isArray(projects) ? projects.length : 0,

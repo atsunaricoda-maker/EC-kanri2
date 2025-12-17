@@ -71,10 +71,21 @@ export default function WmsRegisterPage() {
       if (filters.wmsName) params.append('wmsName', filters.wmsName)
 
       const res = await fetch(`/api/wms?${params.toString()}`)
+      const contentType = res.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('API returned non-JSON response')
+        setWmsData([])
+        return
+      }
       const data = await res.json()
-      setWmsData(data)
-    } catch {
-      setError('WMSデータの取得に失敗しました')
+      if (Array.isArray(data)) {
+        setWmsData(data)
+      } else {
+        setWmsData([])
+      }
+    } catch (e) {
+      console.error('WMS fetch error:', e)
+      setWmsData([])
     } finally {
       setLoading(false)
     }
@@ -164,12 +175,18 @@ export default function WmsRegisterPage() {
         }),
       })
 
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || '登録に失敗しました')
+      const contentType = res.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text()
+        console.error('API returned non-JSON:', text.substring(0, 200))
+        throw new Error('サーバーエラーが発生しました。しばらく待ってから再試行してください。')
       }
 
       const result = await res.json()
+      
+      if (!res.ok) {
+        throw new Error(result.error || '登録に失敗しました')
+      }
       setSuccess(result.message)
       setCsvData([])
       await fetchWmsData()
