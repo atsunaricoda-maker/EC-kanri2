@@ -1,0 +1,274 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ============================================
+// マスタ管理
+// ============================================
+
+// ECサイトマスタ
+model EcSite {
+  id                  Int       @id @default(autoincrement())
+  name                String    @unique // ECサイト名
+  hasProductCsv       Boolean   @default(false) // 商品登録CSVに案件情報あり
+  remarks             String?   // 備考
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  // Relations
+  productCsvMasters   ProductCsvMaster[]
+  wmsCsvMasters       WmsCsvMaster[]
+  products            Product[]
+}
+
+// 請求区分マスタ
+model BillingCategory {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique // 請求区分名
+  remarks     String?   // 備考
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  projects    Project[]
+}
+
+// 倉庫マスタ
+model Warehouse {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique // 倉庫名
+  remarks     String?   // 備考
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  projects    Project[]
+}
+
+// 商品CSVマスタ（ECサイトごとのCSV列マッピング）
+model ProductCsvMaster {
+  id              Int       @id @default(autoincrement())
+  ecSiteId        Int
+  ecSite          EcSite    @relation(fields: [ecSiteId], references: [id], onDelete: Cascade)
+  projectColumn   String?   // 案件名の列
+  categoryColumn  String?   // カテゴリの列
+  productCodeColumn String? // 商品コードの列
+  productNameColumn String? // 商品名の列
+  variationColumn String?   // バリエーションの列
+  priceColumn     String?   // 販売単価（税込）の列
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([ecSiteId])
+}
+
+// WMS CSVマスタ（WMSごとのCSV列マッピング）
+model WmsCsvMaster {
+  id                    Int       @id @default(autoincrement())
+  wmsName               String    // WMS名（イープラスショップ、サイテキカートST、ネルケ等）
+  ecSiteId              Int?
+  ecSite                EcSite?   @relation(fields: [ecSiteId], references: [id])
+  orderNumberColumn     String?   // 受注番号の列
+  productCodeColumn     String?   // 商品コードの列
+  quantityColumn        String?   // 出荷数の列
+  unitPriceColumn       String?   // 販売単価の列
+  shipDateColumn        String?   // 出荷完了日の列
+  shippingColumn        String?   // 送料の列 (* = 計算対象)
+  codFeeColumn          String?   // コンビニ決済手数料の列
+  commissionColumn      String?   // 引取手数料の列
+  targetItemName        String?   // 対象項目名
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  @@unique([wmsName])
+}
+
+// 請求項目マスタ
+model BillingItem {
+  id              Int       @id @default(autoincrement())
+  documentName    String    // 請求書種類名（会場事務所発送料（100サイズ）等）
+  documentType    String    // 請求書計上（請求金額等）
+  targetItemName  String    // 対象項目名（案件集計、イレギュラー請求登録用）
+  displayOrder    Int       @default(0) // 並び順
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  irregularBillings IrregularBilling[]
+}
+
+// ============================================
+// クライアント管理
+// ============================================
+
+// クライアントマスタ
+model Client {
+  id                Int       @id @default(autoincrement())
+  name              String    @unique // クライアント名
+  isActive          Boolean   @default(true) // 有効フラグ
+  postalCode        String?   // 郵便番号
+  address1          String?   // 住所1
+  address2          String?   // 住所2
+  bankName          String?   // 金融機関名
+  branchName        String?   // 支店名
+  accountType       String?   // 口座種別（普通/当座）
+  accountNumber     String?   // 口座番号
+  accountHolder     String?   // 口座名義
+  storageFee        Float?    // 保管費（税込）
+  operationFee      Float?    // 運営固定費（税込）
+  remarks           String?   // 備考
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  updatedBy         String?   // 更新者
+  
+  // Relations
+  contacts          ClientContact[]
+  projects          Project[]
+}
+
+// クライアント担当者
+model ClientContact {
+  id              Int       @id @default(autoincrement())
+  clientId        Int
+  client          Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name            String    // 担当者名
+  email           String?   // メールアドレス
+  phone           String?   // 電話番号
+  sendInvoice     Boolean   @default(false) // 請求書送付チェック
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// ============================================
+// 案件管理
+// ============================================
+
+// 案件マスタ
+model Project {
+  id                  Int       @id @default(autoincrement())
+  clientId            Int
+  client              Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name                String    // 案件名
+  startDate           DateTime? // 開始日
+  endDate             DateTime? // 終了日
+  commissionRate      Float?    // 販売手数料率（%）
+  warehouseId         Int?
+  warehouse           Warehouse? @relation(fields: [warehouseId], references: [id])
+  billingCategoryId   Int?
+  billingCategory     BillingCategory? @relation(fields: [billingCategoryId], references: [id])
+  remarks             String?   // 備考
+  isActive            Boolean   @default(true) // 有効フラグ
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  updatedBy           String?   // 更新者
+  
+  // Relations
+  products            Product[]
+  wmsData             WmsData[]
+  irregularBillings   IrregularBilling[]
+  invoices            Invoice[]
+}
+
+// ============================================
+// 商品管理
+// ============================================
+
+// 商品マスタ
+model Product {
+  id              Int       @id @default(autoincrement())
+  ecSiteId        Int
+  ecSite          EcSite    @relation(fields: [ecSiteId], references: [id])
+  projectId       Int?
+  project         Project?  @relation(fields: [projectId], references: [id])
+  category        String?   // カテゴリ
+  productCode     String    // 商品コード
+  productName     String    // 商品名
+  variation       String?   // バリエーション
+  unitPrice       Float?    // 販売単価（税込）
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  updatedBy       String?   // 更新者
+  
+  @@unique([ecSiteId, productCode, variation])
+}
+
+// ============================================
+// WMSデータ管理
+// ============================================
+
+// WMSデータ
+model WmsData {
+  id                Int       @id @default(autoincrement())
+  wmsName           String    // WMS名
+  projectId         Int
+  project           Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  orderNumber       String    // 受注番号
+  productCode       String?   // 商品コード
+  productName       String?   // 商品名
+  quantity          Int       @default(1) // 出荷数
+  unitPrice         Float?    // 販売単価
+  totalAmount       Float?    // 商品合計金額
+  shipDate          DateTime? // 出荷完了日
+  shippingFee       Float?    // 送料
+  codFee            Float?    // コンビニ決済手数料
+  commission        Float?    // 引取手数料
+  afterDeliveryStatus String? // 出荷後受取拒否
+  targetMonth       String?   // 対象年月 (YYYY年MM月形式)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([projectId, targetMonth])
+  @@index([orderNumber])
+}
+
+// ============================================
+// 請求管理
+// ============================================
+
+// イレギュラー請求登録
+model IrregularBilling {
+  id                  Int         @id @default(autoincrement())
+  targetMonth         String      // 対象年月 (YYYY年MM月形式)
+  projectId           Int
+  project             Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  billingItemId       Int
+  billingItem         BillingItem @relation(fields: [billingItemId], references: [id])
+  venueShippingFee100 Float?      // 会場事務所発送料（100サイズ）
+  venueShippingFee160 Float?      // 会場事務所発送料（160サイズ）
+  cashOnDeliveryFee   Float?      // 着払い返送費
+  advanceShippingFee  Float?      // 着払い発送費
+  defectExchangeFee   Float?      // 不良交換発送費
+  cancelReturnFee     Float?      // キャンセル返金
+  storageFee          Float?      // 保管費
+  returnHandlingFee   Float?      // 返金手数料
+  operationFee        Float?      // 運営固定費
+  miscExpense         Float?      // 雑費費用
+  deliveryAccidentFee Float?      // 配送事故補填
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  
+  @@unique([targetMonth, projectId, billingItemId])
+}
+
+// 請求書
+model Invoice {
+  id              Int       @id @default(autoincrement())
+  targetMonth     String    // 対象年月 (YYYY年MM月形式)
+  projectId       Int
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status          String    @default("未送信") // ステータス（未送信/送信済）
+  sentAt          DateTime? // 送信日時
+  sentBy          String?   // 送信者
+  remarks         String?   // 備考
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([targetMonth, projectId])
+}
