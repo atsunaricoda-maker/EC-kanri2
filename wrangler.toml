@@ -1,8 +1,9 @@
 name = "ec-kanri2"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "ec-kanri2-db"
-database_id = ""
+database_id = "b33e9c65-6be2-47fb-9f76-128a1d3efcfa"

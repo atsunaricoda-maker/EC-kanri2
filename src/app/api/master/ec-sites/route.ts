@@ -7,8 +7,7 @@ export const runtime = 'edge'
 export async function GET() {
   try {
     const prisma = getDB()
-    const ecSites = const prisma = getDB()
-    await prisma.ecSite.findMany({
+    const ecSites = await prisma.ecSite.findMany({
       orderBy: { id: 'asc' },
     })
     return NextResponse.json(ecSites)
@@ -29,17 +28,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'ECサイト名は必須です' }, { status: 400 })
     }
 
-    // 重複チェック
-    const existing = const prisma = getDB()
-    await prisma.ecSite.findUnique({
+    const existing = await prisma.ecSite.findUnique({
       where: { name },
     })
     if (existing) {
       return NextResponse.json({ error: '同じ名前のECサイトが既に存在します' }, { status: 400 })
     }
 
-    const ecSite = const prisma = getDB()
-    await prisma.ecSite.create({
+    const ecSite = await prisma.ecSite.create({
       data: {
         name,
         hasProductCsv: hasProductCsv || false,

@@ -17,9 +17,7 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
       return NextResponse.json({ error: 'ECサイト名は必須です' }, { status: 400 })
     }
 
-    // 重複チェック（自身以外）
-    const existing = const prisma = getDB()
-    await prisma.ecSite.findFirst({
+    const existing = await prisma.ecSite.findFirst({
       where: {
         name,
         NOT: { id: parseInt(id) },
@@ -29,8 +27,7 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
       return NextResponse.json({ error: '同じ名前のECサイトが既に存在します' }, { status: 400 })
     }
 
-    const ecSite = const prisma = getDB()
-    await prisma.ecSite.update({
+    const ecSite = await prisma.ecSite.update({
       where: { id: parseInt(id) },
       data: {
         name,
@@ -51,7 +48,6 @@ export async function DELETE(request: NextRequest, { params }: { params: Params 
   try {
     const prisma = getDB()
     const { id } = await params
-    const prisma = getDB()
     await prisma.ecSite.delete({
       where: { id: parseInt(id) },
     })
