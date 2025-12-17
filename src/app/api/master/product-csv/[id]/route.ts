@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 type Params = Promise<{ id: string }>
 
 // PUT: 商品CSVマスタ更新
 export async function PUT(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     const body = await request.json()
     const {
@@ -22,7 +25,6 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
       return NextResponse.json({ error: 'ECサイトは必須です' }, { status: 400 })
     }
 
-    // 重複チェック（自身以外）
     const existing = await prisma.productCsvMaster.findFirst({
       where: {
         ecSiteId: parseInt(ecSiteId),
@@ -59,6 +61,7 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
 // DELETE: 商品CSVマスタ削除
 export async function DELETE(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     await prisma.productCsvMaster.delete({
       where: { id: parseInt(id) },

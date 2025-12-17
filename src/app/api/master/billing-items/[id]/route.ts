@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 type Params = Promise<{ id: string }>
 
 // PUT: 請求項目マスタ更新
 export async function PUT(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     const body = await request.json()
     const { documentName, documentType, targetItemName, displayOrder } = body
@@ -40,6 +43,7 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
 // DELETE: 請求項目マスタ削除
 export async function DELETE(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     await prisma.billingItem.delete({
       where: { id: parseInt(id) },

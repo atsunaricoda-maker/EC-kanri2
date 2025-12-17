@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 // GET: 請求書一覧取得
 export async function GET(request: NextRequest) {
   try {
+    const prisma = getDB()
     const { searchParams } = new URL(request.url)
     const targetMonth = searchParams.get('targetMonth')
     const clientId = searchParams.get('clientId')
@@ -29,7 +32,6 @@ export async function GET(request: NextRequest) {
       orderBy: { id: 'desc' },
     })
 
-    // クライアントでフィルタリング
     let filteredInvoices = invoices
     if (clientId) {
       filteredInvoices = invoices.filter(
@@ -47,6 +49,7 @@ export async function GET(request: NextRequest) {
 // POST: 請求書作成
 export async function POST(request: NextRequest) {
   try {
+    const prisma = getDB()
     const body = await request.json()
     const { targetMonth, projectId, remarks } = body
 
@@ -57,7 +60,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '案件は必須です' }, { status: 400 })
     }
 
-    // 既存チェック
     const existing = await prisma.invoice.findFirst({
       where: {
         targetMonth,

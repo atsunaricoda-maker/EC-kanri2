@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 // GET: クライアント一覧取得
 export async function GET(request: NextRequest) {
   try {
+    const prisma = getDB()
     const { searchParams } = new URL(request.url)
     const name = searchParams.get('name')
     const isActive = searchParams.get('isActive')
@@ -33,6 +36,7 @@ export async function GET(request: NextRequest) {
 // POST: クライアント登録
 export async function POST(request: NextRequest) {
   try {
+    const prisma = getDB()
     const body = await request.json()
     const {
       name,
@@ -55,7 +59,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'クライアント名は必須です' }, { status: 400 })
     }
 
-    // 重複チェック
     const existing = await prisma.client.findUnique({
       where: { name },
     })

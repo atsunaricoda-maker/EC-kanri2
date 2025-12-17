@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 type Params = Promise<{ id: string }>
 
 // PUT: ECサイト更新
 export async function PUT(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     const body = await request.json()
     const { name, hasProductCsv, remarks } = body
@@ -15,7 +18,8 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
     }
 
     // 重複チェック（自身以外）
-    const existing = await prisma.ecSite.findFirst({
+    const existing = const prisma = getDB()
+    await prisma.ecSite.findFirst({
       where: {
         name,
         NOT: { id: parseInt(id) },
@@ -25,7 +29,8 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
       return NextResponse.json({ error: '同じ名前のECサイトが既に存在します' }, { status: 400 })
     }
 
-    const ecSite = await prisma.ecSite.update({
+    const ecSite = const prisma = getDB()
+    await prisma.ecSite.update({
       where: { id: parseInt(id) },
       data: {
         name,
@@ -44,7 +49,9 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
 // DELETE: ECサイト削除
 export async function DELETE(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
+    const prisma = getDB()
     await prisma.ecSite.delete({
       where: { id: parseInt(id) },
     })

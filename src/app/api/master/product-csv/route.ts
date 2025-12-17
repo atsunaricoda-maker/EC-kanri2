@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 // GET: 商品CSVマスタ一覧取得
 export async function GET() {
   try {
+    const prisma = getDB()
     const productCsvMasters = await prisma.productCsvMaster.findMany({
       include: {
         ecSite: true,
@@ -20,6 +23,7 @@ export async function GET() {
 // POST: 商品CSVマスタ登録
 export async function POST(request: NextRequest) {
   try {
+    const prisma = getDB()
     const body = await request.json()
     const {
       ecSiteId,
@@ -35,7 +39,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'ECサイトは必須です' }, { status: 400 })
     }
 
-    // 重複チェック
     const existing = await prisma.productCsvMaster.findUnique({
       where: { ecSiteId: parseInt(ecSiteId) },
     })

@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 // GET: 請求項目マスタ一覧取得
 export async function GET() {
   try {
+    const prisma = getDB()
     const billingItems = await prisma.billingItem.findMany({
       orderBy: { displayOrder: 'asc' },
     })
@@ -17,6 +20,7 @@ export async function GET() {
 // POST: 請求項目マスタ登録
 export async function POST(request: NextRequest) {
   try {
+    const prisma = getDB()
     const body = await request.json()
     const { documentName, documentType, targetItemName, displayOrder } = body
 

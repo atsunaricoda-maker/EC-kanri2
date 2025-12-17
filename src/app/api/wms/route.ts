@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 // GET: WMSデータ一覧取得
 export async function GET(request: NextRequest) {
   try {
+    const prisma = getDB()
     const { searchParams } = new URL(request.url)
     const wmsName = searchParams.get('wmsName')
     const projectId = searchParams.get('projectId')
@@ -30,7 +33,7 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: { id: 'desc' },
-      take: 100, // 最新100件
+      take: 100,
     })
     return NextResponse.json(wmsData)
   } catch (error) {
@@ -42,6 +45,7 @@ export async function GET(request: NextRequest) {
 // POST: WMSデータ一括登録（CSV）
 export async function POST(request: NextRequest) {
   try {
+    const prisma = getDB()
     const body = await request.json()
     const { wmsData, wmsName, projectId, targetMonth } = body
 
@@ -55,7 +59,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'WMSデータが必要です' }, { status: 400 })
     }
 
-    // 既存データを削除して再登録（同じWMS名、案件、対象月のデータ）
     if (targetMonth) {
       await prisma.wmsData.deleteMany({
         where: {

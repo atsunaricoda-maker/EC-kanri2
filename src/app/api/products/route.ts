@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 // GET: 商品一覧取得
 export async function GET(request: NextRequest) {
   try {
+    const prisma = getDB()
     const { searchParams } = new URL(request.url)
     const ecSiteId = searchParams.get('ecSiteId')
     const projectId = searchParams.get('projectId')
@@ -23,7 +26,7 @@ export async function GET(request: NextRequest) {
         project: true,
       },
       orderBy: { id: 'desc' },
-      take: 100, // 最新100件
+      take: 100,
     })
     return NextResponse.json(products)
   } catch (error) {
@@ -35,6 +38,7 @@ export async function GET(request: NextRequest) {
 // POST: 商品一括登録（CSV）
 export async function POST(request: NextRequest) {
   try {
+    const prisma = getDB()
     const body = await request.json()
     const { products, ecSiteId, projectId } = body
 
@@ -58,7 +62,6 @@ export async function POST(request: NextRequest) {
       })
 
       if (existing) {
-        // 更新
         await prisma.product.update({
           where: { id: existing.id },
           data: {
@@ -70,7 +73,6 @@ export async function POST(request: NextRequest) {
         })
         updateCount++
       } else {
-        // 新規登録
         await prisma.product.create({
           data: {
             ecSiteId: parseInt(ecSiteId),

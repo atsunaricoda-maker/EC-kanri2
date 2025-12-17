@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 // GET: ECサイト一覧取得
 export async function GET() {
   try {
-    const ecSites = await prisma.ecSite.findMany({
+    const prisma = getDB()
+    const ecSites = const prisma = getDB()
+    await prisma.ecSite.findMany({
       orderBy: { id: 'asc' },
     })
     return NextResponse.json(ecSites)
@@ -17,6 +21,7 @@ export async function GET() {
 // POST: ECサイト登録
 export async function POST(request: NextRequest) {
   try {
+    const prisma = getDB()
     const body = await request.json()
     const { name, hasProductCsv, remarks } = body
 
@@ -25,14 +30,16 @@ export async function POST(request: NextRequest) {
     }
 
     // 重複チェック
-    const existing = await prisma.ecSite.findUnique({
+    const existing = const prisma = getDB()
+    await prisma.ecSite.findUnique({
       where: { name },
     })
     if (existing) {
       return NextResponse.json({ error: '同じ名前のECサイトが既に存在します' }, { status: 400 })
     }
 
-    const ecSite = await prisma.ecSite.create({
+    const ecSite = const prisma = getDB()
+    await prisma.ecSite.create({
       data: {
         name,
         hasProductCsv: hasProductCsv || false,

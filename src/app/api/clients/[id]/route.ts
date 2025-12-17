@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 type Params = Promise<{ id: string }>
 
 // GET: クライアント詳細取得
 export async function GET(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     const client = await prisma.client.findUnique({
       where: { id: parseInt(id) },
@@ -28,6 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
 // PUT: クライアント更新
 export async function PUT(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     const body = await request.json()
     const {
@@ -51,7 +55,6 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
       return NextResponse.json({ error: 'クライアント名は必須です' }, { status: 400 })
     }
 
-    // 重複チェック（自身以外）
     const existing = await prisma.client.findFirst({
       where: {
         name,
@@ -62,7 +65,6 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
       return NextResponse.json({ error: '同じ名前のクライアントが既に存在します' }, { status: 400 })
     }
 
-    // 既存の担当者を削除してから新しく作成
     await prisma.clientContact.deleteMany({
       where: { clientId: parseInt(id) },
     })
@@ -107,6 +109,7 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
 // DELETE: クライアント削除
 export async function DELETE(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     await prisma.client.delete({
       where: { id: parseInt(id) },

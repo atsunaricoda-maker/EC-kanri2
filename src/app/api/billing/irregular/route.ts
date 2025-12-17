@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 // GET: イレギュラー請求一覧取得
 export async function GET(request: NextRequest) {
   try {
+    const prisma = getDB()
     const { searchParams } = new URL(request.url)
     const targetMonth = searchParams.get('targetMonth')
     const projectId = searchParams.get('projectId')
@@ -38,6 +41,7 @@ export async function GET(request: NextRequest) {
 // POST: イレギュラー請求登録
 export async function POST(request: NextRequest) {
   try {
+    const prisma = getDB()
     const body = await request.json()
     const {
       targetMonth,
@@ -66,7 +70,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '請求項目は必須です' }, { status: 400 })
     }
 
-    // 既存データチェック（更新 or 新規）
     const existing = await prisma.irregularBilling.findFirst({
       where: {
         targetMonth,

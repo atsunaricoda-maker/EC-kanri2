@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDB } from '@/lib/db'
+
+export const runtime = 'edge'
 
 type Params = Promise<{ id: string }>
 
 // GET: 案件詳細取得
 export async function GET(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     const project = await prisma.project.findUnique({
       where: { id: parseInt(id) },
@@ -30,6 +33,7 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
 // PUT: 案件更新
 export async function PUT(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     const body = await request.json()
     const {
@@ -81,6 +85,7 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
 // DELETE: 案件削除
 export async function DELETE(request: NextRequest, { params }: { params: Params }) {
   try {
+    const prisma = getDB()
     const { id } = await params
     await prisma.project.delete({
       where: { id: parseInt(id) },
