@@ -15,6 +15,8 @@ type Project = {
   commissionRate: number | null
 }
 
+type TabType = 'transfer' | 'invoice' | 'sales'
+
 // 現在の対象年月を取得（前月）
 const getCurrentTargetMonth = () => {
   const now = new Date()
@@ -34,6 +36,7 @@ export default function BillingSummaryPage() {
   const [summaryData, setSummaryData] = useState<Record<string, number | string>>({})
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [activeTab, setActiveTab] = useState<TabType>('transfer')
 
   const fetchMasterData = useCallback(async () => {
     try {
@@ -170,75 +173,209 @@ export default function BillingSummaryPage() {
         <>
           <Card>
             <div className="flex border-b mb-4">
-              <button className="px-4 py-2 border-b-2 border-blue-600 text-blue-600 font-medium">
+              <button 
+                onClick={() => setActiveTab('transfer')}
+                className={`px-4 py-2 ${activeTab === 'transfer' ? 'border-b-2 border-blue-600 text-blue-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+              >
                 振込明細書
               </button>
-              <button className="px-4 py-2 text-gray-500 hover:text-gray-700">
+              <button 
+                onClick={() => setActiveTab('invoice')}
+                className={`px-4 py-2 ${activeTab === 'invoice' ? 'border-b-2 border-blue-600 text-blue-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+              >
                 請求書
               </button>
-              <button className="px-4 py-2 text-gray-500 hover:text-gray-700">
+              <button 
+                onClick={() => setActiveTab('sales')}
+                className={`px-4 py-2 ${activeTab === 'sales' ? 'border-b-2 border-blue-600 text-blue-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}
+              >
                 通販売上金額明細書
               </button>
             </div>
 
-            <div className="p-4 border rounded">
-              <h3 className="text-lg font-bold mb-4">
-                {filters.targetMonth}_通販売上金額明細書
-              </h3>
+            {/* 振込明細書タブ */}
+            {activeTab === 'transfer' && (
+              <div className="p-4 border rounded">
+                <h3 className="text-lg font-bold mb-4">
+                  {filters.targetMonth}_振込明細書
+                </h3>
 
-              <div className="border p-4 bg-white">
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p className="text-sm text-gray-600">クライアント名</p>
-                    <p className="font-medium">{selectedProject?.client.name || '-'}</p>
+                <div className="border p-4 bg-white">
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-sm text-gray-600">クライアント名</p>
+                      <p className="font-medium">{selectedProject?.client.name || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">案件名</p>
+                      <p className="font-medium">{selectedProject?.name || '-'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">案件名</p>
-                    <p className="font-medium">{selectedProject?.name || '-'}</p>
-                  </div>
+
+                  <table className="w-full border-collapse border">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border p-2 text-left">項目</th>
+                        <th className="border p-2 text-right">金額</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="border p-2">売上金額</td>
+                        <td className="border p-2 text-right">
+                          ¥{summaryData.totalSales?.toLocaleString() || 0}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border p-2">販売手数料</td>
+                        <td className="border p-2 text-right">
+                          -¥{summaryData.commissionFee?.toLocaleString() || 0}
+                        </td>
+                      </tr>
+                      <tr className="bg-blue-50">
+                        <td className="border p-2 font-bold">振込金額</td>
+                        <td className="border p-2 text-right font-bold">
+                          ¥{summaryData.totalAmount?.toLocaleString() || 0}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
+              </div>
+            )}
 
-                <table className="w-full border-collapse border">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border p-2 text-left">項目</th>
-                      <th className="border p-2 text-right">金額</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border p-2">商品代金</td>
-                      <td className="border p-2 text-right">
-                        ¥{summaryData.totalSales?.toLocaleString() || 0}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border p-2">販売手数料</td>
-                      <td className="border p-2 text-right">
-                        ¥{summaryData.commissionFee?.toLocaleString() || 0}
-                      </td>
-                    </tr>
-                    <tr className="bg-blue-50">
-                      <td className="border p-2 font-bold">合計金額</td>
-                      <td className="border p-2 text-right font-bold">
-                        ¥{summaryData.totalAmount?.toLocaleString() || 0}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+            {/* 請求書タブ */}
+            {activeTab === 'invoice' && (
+              <div className="p-4 border rounded">
+                <h3 className="text-lg font-bold mb-4">
+                  {filters.targetMonth}_請求書
+                </h3>
 
-                <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-gray-600">出荷件数</p>
-                    <p>{summaryData.shippingCount || 0}件</p>
+                <div className="border p-4 bg-white">
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-sm text-gray-600">請求先</p>
+                      <p className="font-medium">{selectedProject?.client.name || '-'} 御中</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">案件名</p>
+                      <p className="font-medium">{selectedProject?.name || '-'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-gray-600">平均客単価</p>
-                    <p>¥{summaryData.avgUnitPrice?.toLocaleString() || 0}</p>
+
+                  <table className="w-full border-collapse border">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border p-2 text-left">摘要</th>
+                        <th className="border p-2 text-right">数量</th>
+                        <th className="border p-2 text-right">単価</th>
+                        <th className="border p-2 text-right">金額</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="border p-2">倉庫保管料</td>
+                        <td className="border p-2 text-right">1</td>
+                        <td className="border p-2 text-right">¥50,000</td>
+                        <td className="border p-2 text-right">¥50,000</td>
+                      </tr>
+                      <tr>
+                        <td className="border p-2">出荷作業料</td>
+                        <td className="border p-2 text-right">{summaryData.shippingCount || 0}</td>
+                        <td className="border p-2 text-right">¥300</td>
+                        <td className="border p-2 text-right">¥{((Number(summaryData.shippingCount) || 0) * 300).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td className="border p-2">販売手数料</td>
+                        <td className="border p-2 text-right">1</td>
+                        <td className="border p-2 text-right">-</td>
+                        <td className="border p-2 text-right">¥{summaryData.commissionFee?.toLocaleString() || 0}</td>
+                      </tr>
+                      <tr className="bg-blue-50">
+                        <td className="border p-2 font-bold" colSpan={3}>小計</td>
+                        <td className="border p-2 text-right font-bold">
+                          ¥{(50000 + ((Number(summaryData.shippingCount) || 0) * 300) + (Number(summaryData.commissionFee) || 0)).toLocaleString()}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border p-2" colSpan={3}>消費税（10%）</td>
+                        <td className="border p-2 text-right">
+                          ¥{Math.floor((50000 + ((Number(summaryData.shippingCount) || 0) * 300) + (Number(summaryData.commissionFee) || 0)) * 0.1).toLocaleString()}
+                        </td>
+                      </tr>
+                      <tr className="bg-green-50">
+                        <td className="border p-2 font-bold" colSpan={3}>合計</td>
+                        <td className="border p-2 text-right font-bold">
+                          ¥{Math.floor((50000 + ((Number(summaryData.shippingCount) || 0) * 300) + (Number(summaryData.commissionFee) || 0)) * 1.1).toLocaleString()}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* 通販売上金額明細書タブ */}
+            {activeTab === 'sales' && (
+              <div className="p-4 border rounded">
+                <h3 className="text-lg font-bold mb-4">
+                  {filters.targetMonth}_通販売上金額明細書
+                </h3>
+
+                <div className="border p-4 bg-white">
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-sm text-gray-600">クライアント名</p>
+                      <p className="font-medium">{selectedProject?.client.name || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">案件名</p>
+                      <p className="font-medium">{selectedProject?.name || '-'}</p>
+                    </div>
+                  </div>
+
+                  <table className="w-full border-collapse border">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border p-2 text-left">項目</th>
+                        <th className="border p-2 text-right">金額</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="border p-2">商品代金</td>
+                        <td className="border p-2 text-right">
+                          ¥{summaryData.totalSales?.toLocaleString() || 0}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border p-2">販売手数料</td>
+                        <td className="border p-2 text-right">
+                          ¥{summaryData.commissionFee?.toLocaleString() || 0}
+                        </td>
+                      </tr>
+                      <tr className="bg-blue-50">
+                        <td className="border p-2 font-bold">合計金額</td>
+                        <td className="border p-2 text-right font-bold">
+                          ¥{summaryData.totalAmount?.toLocaleString() || 0}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-600">出荷件数</p>
+                      <p>{summaryData.shippingCount || 0}件</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">平均客単価</p>
+                      <p>¥{summaryData.avgUnitPrice?.toLocaleString() || 0}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </Card>
 
           <Card>
