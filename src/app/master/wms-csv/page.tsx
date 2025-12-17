@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { safeFetch, safePost } from '@/lib/api'
 import { Button, Input, Select, Card, Table } from '@/components/ui'
 
 type EcSite = {

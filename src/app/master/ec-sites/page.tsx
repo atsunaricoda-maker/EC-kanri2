@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Button, Input, Card, Table } from '@/components/ui'
+import { safeFetch, safePost } from '@/lib/api'
 
 type EcSite = {
   id: number
@@ -25,15 +26,9 @@ export default function EcSitesPage() {
   const [submitting, setSubmitting] = useState(false)
 
   const fetchEcSites = useCallback(async () => {
-    try {
-      const res = await fetch('/api/master/ec-sites')
-      const data = await res.json()
-      setEcSites(data)
-    } catch {
-      setError('データの取得に失敗しました')
-    } finally {
-      setLoading(false)
-    }
+    const data = await safeFetch<EcSite[]>('/api/master/ec-sites', [])
+    setEcSites(Array.isArray(data) ? data : [])
+    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -51,30 +46,20 @@ export default function EcSitesPage() {
     setError('')
     setSubmitting(true)
 
-    try {
-      const url = editingId
-        ? `/api/master/ec-sites/${editingId}`
-        : '/api/master/ec-sites'
-      const method = editingId ? 'PUT' : 'POST'
+    const url = editingId
+      ? `/api/master/ec-sites/${editingId}`
+      : '/api/master/ec-sites'
+    const method = editingId ? 'PUT' : 'POST'
 
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || '登録に失敗しました')
-      }
-
+    const result = await safePost(url, formData, { method })
+    
+    if (result.success) {
       await fetchEcSites()
       resetForm()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '登録に失敗しました')
-    } finally {
-      setSubmitting(false)
+    } else {
+      setError(result.error || '登録に失敗しました')
     }
+    setSubmitting(false)
   }
 
   const handleEdit = (ecSite: EcSite) => {
@@ -90,22 +75,15 @@ export default function EcSitesPage() {
   const handleDelete = async (id: number) => {
     if (!confirm('このECサイトを削除しますか？')) return
 
-    try {
-      const res = await fetch(`/api/master/ec-sites/${id}`, {
-        method: 'DELETE',
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || '削除に失敗しました')
-      }
-
+    const result = await safePost(`/api/master/ec-sites/${id}`, {}, { method: 'DELETE' })
+    
+    if (result.success) {
       await fetchEcSites()
       if (editingId === id) {
         resetForm()
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '削除に失敗しました')
+    } else {
+      setError(result.error || '削除に失敗しました')
     }
   }
 

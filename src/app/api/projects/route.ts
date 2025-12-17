@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       where.clientId = parseInt(clientId)
     }
     if (name) {
-      where.name = { contains: name }
+      where.name = name
     }
     if (isActive !== null && isActive !== '') {
       where.isActive = isActive === 'true'

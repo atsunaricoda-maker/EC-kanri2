@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { safeFetch, safePost } from '@/lib/api'
 import { Button, Input, Card, Table } from '@/components/ui'
 
 type BillingCategory = {
@@ -23,15 +24,9 @@ export default function BillingCategoriesPage() {
   const [submitting, setSubmitting] = useState(false)
 
   const fetchCategories = useCallback(async () => {
-    try {
-      const res = await fetch('/api/master/billing-categories')
-      const data = await res.json()
-      setCategories(data)
-    } catch {
-      setError('データの取得に失敗しました')
-    } finally {
-      setLoading(false)
-    }
+    const data = await safeFetch<BillingCategory[]>('/api/master/billing-categories', [])
+    setCategories(Array.isArray(data) ? data : [])
+    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -49,30 +44,20 @@ export default function BillingCategoriesPage() {
     setError('')
     setSubmitting(true)
 
-    try {
-      const url = editingId
-        ? `/api/master/billing-categories/${editingId}`
-        : '/api/master/billing-categories'
-      const method = editingId ? 'PUT' : 'POST'
+    const url = editingId
+      ? `/api/master/billing-categories/${editingId}`
+      : '/api/master/billing-categories'
+    const method = editingId ? 'PUT' : 'POST'
 
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || '登録に失敗しました')
-      }
-
+    const result = await safePost(url, formData, { method })
+    
+    if (result.success) {
       await fetchCategories()
       resetForm()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '登録に失敗しました')
-    } finally {
-      setSubmitting(false)
+    } else {
+      setError(result.error || '登録に失敗しました')
     }
+    setSubmitting(false)
   }
 
   const handleEdit = (category: BillingCategory) => {
@@ -87,22 +72,15 @@ export default function BillingCategoriesPage() {
   const handleDelete = async (id: number) => {
     if (!confirm('この請求区分を削除しますか？')) return
 
-    try {
-      const res = await fetch(`/api/master/billing-categories/${id}`, {
-        method: 'DELETE',
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || '削除に失敗しました')
-      }
-
+    const result = await safePost(`/api/master/billing-categories/${id}`, {}, { method: 'DELETE' })
+    
+    if (result.success) {
       await fetchCategories()
       if (editingId === id) {
         resetForm()
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '削除に失敗しました')
+    } else {
+      setError(result.error || '削除に失敗しました')
     }
   }
 
