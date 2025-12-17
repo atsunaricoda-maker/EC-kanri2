@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>機能一覧 - エンタメEC 請求書作成システム</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .check { color: #22c55e; }
+    .pending { color: #f59e0b; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-6xl mx-auto py-8 px-4">
+    
+    <!-- ヘッダー -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8 rounded-lg shadow-lg mb-8">
+      <h1 class="text-3xl font-bold mb-2">エンタメEC 請求書作成システム</h1>
+      <p class="text-blue-100">機能一覧・実装状況</p>
+      <a href="https://ec-kanri2.pages.dev" class="inline-block mt-4 bg-white text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-50">
+        アプリを開く →
+      </a>
+    </div>
+
+    <!-- サマリー -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+        <p class="text-gray-500 text-sm">実装済み機能</p>
+        <p class="text-3xl font-bold text-green-600">26</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+        <p class="text-gray-500 text-sm">今後の機能</p>
+        <p class="text-3xl font-bold text-yellow-600">8</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+        <p class="text-gray-500 text-sm">画面数</p>
+        <p class="text-3xl font-bold text-blue-600">16</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+        <p class="text-gray-500 text-sm">APIエンドポイント</p>
+        <p class="text-3xl font-bold text-purple-600">20</p>
+      </div>
+    </div>
+
+    <!-- STEP1: マスタ管理 -->
+    <div class="bg-white rounded-lg shadow mb-6">
+      <div class="bg-purple-500 text-white px-6 py-3 rounded-t-lg">
+        <h2 class="text-xl font-bold">STEP1: マスタ管理</h2>
+      </div>
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">機能</th>
+              <th class="text-center py-2 w-24">状態</th>
+              <th class="text-left py-2">説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-3">ECサイトマスタ</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">ECサイトの登録・編集・削除</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">倉庫マスタ</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">倉庫の登録・編集・削除</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">請求区分マスタ</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">請求区分の登録・編集・削除</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">請求項目マスタ</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">請求項目の登録・編集・削除</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">商品CSVマスタ</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">ECサイトごとのCSV列マッピング設定</td>
+            </tr>
+            <tr>
+              <td class="py-3">WMS CSVマスタ</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">WMSごとのCSV列マッピング設定</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP2: クライアント管理 -->
+    <div class="bg-white rounded-lg shadow mb-6">
+      <div class="bg-blue-500 text-white px-6 py-3 rounded-t-lg">
+        <h2 class="text-xl font-bold">STEP2: クライアント管理</h2>
+      </div>
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">機能</th>
+              <th class="text-center py-2 w-24">状態</th>
+              <th class="text-left py-2">説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-3">クライアント一覧</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">登録済みクライアントの一覧表示・検索・削除</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">クライアント登録</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">会社情報、担当者、銀行口座情報の登録・編集</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">担当者管理</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">複数担当者の追加・削除、請求書送付先フラグ</td>
+            </tr>
+            <tr>
+              <td class="py-3">有効/無効切替</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">クライアントの有効/無効ステータス管理</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP3: 案件管理 -->
+    <div class="bg-white rounded-lg shadow mb-6">
+      <div class="bg-green-500 text-white px-6 py-3 rounded-t-lg">
+        <h2 class="text-xl font-bold">STEP3: 案件管理</h2>
+      </div>
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">機能</th>
+              <th class="text-center py-2 w-24">状態</th>
+              <th class="text-left py-2">説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-3">案件一覧</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">登録済み案件の一覧表示・検索・削除</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">案件登録</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">クライアント紐付け、案件名、期間、手数料率の設定</td>
+            </tr>
+            <tr>
+              <td class="py-3">倉庫・請求区分紐付け</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">案件ごとに使用する倉庫と請求区分を設定</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP4: データ取込 -->
+    <div class="bg-white rounded-lg shadow mb-6">
+      <div class="bg-yellow-500 text-white px-6 py-3 rounded-t-lg">
+        <h2 class="text-xl font-bold">STEP4: データ取込</h2>
+      </div>
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">機能</th>
+              <th class="text-center py-2 w-24">状態</th>
+              <th class="text-left py-2">説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-3">商品データCSV取込</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">ECサイトの商品マスタCSVをアップロード・登録</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">WMSデータCSV取込</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">WMSの出荷データCSVをアップロード・登録</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">データ一覧表示</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">取り込んだデータの確認</td>
+            </tr>
+            <tr>
+              <td class="py-3">対象年月指定</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">取込データの対象年月を指定</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP5: 請求管理 -->
+    <div class="bg-white rounded-lg shadow mb-6">
+      <div class="bg-red-500 text-white px-6 py-3 rounded-t-lg">
+        <h2 class="text-xl font-bold">STEP5: 請求管理</h2>
+      </div>
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">機能</th>
+              <th class="text-center py-2 w-24">状態</th>
+              <th class="text-left py-2">説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-3">請求書作成（案件集計）</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">クライアント・案件・対象月を選択して請求書作成</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">振込明細書タブ</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">売上金額、販売手数料、振込金額の表示</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">請求書タブ</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">倉庫保管料、出荷作業料、消費税を含む明細表示</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">通販売上金額明細書タブ</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">商品代金、出荷件数、平均客単価の表示</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">請求書一覧</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">発行済み請求書の一覧表示</td>
+            </tr>
+            <tr>
+              <td class="py-3">イレギュラー請求登録</td>
+              <td class="text-center"><span class="check text-xl">✓</span></td>
+              <td class="text-gray-600">通常外の請求データを手動登録</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 今後の機能 -->
+    <div class="bg-white rounded-lg shadow mb-6">
+      <div class="bg-gray-500 text-white px-6 py-3 rounded-t-lg">
+        <h2 class="text-xl font-bold">🚧 今後の機能（未実装）</h2>
+      </div>
+      <div class="p-6">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">機能</th>
+              <th class="text-center py-2 w-24">優先度</th>
+              <th class="text-left py-2">説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b">
+              <td class="py-3">請求書PDF出力</td>
+              <td class="text-center"><span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm">高</span></td>
+              <td class="text-gray-600">請求書をPDF形式でダウンロード</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">請求書メール送信</td>
+              <td class="text-center"><span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm">高</span></td>
+              <td class="text-gray-600">担当者へ請求書を自動メール送信</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">ユーザー認証</td>
+              <td class="text-center"><span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm">高</span></td>
+              <td class="text-gray-600">ログイン機能、権限管理</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">日次売上レポート</td>
+              <td class="text-center"><span class="bg-yellow-100 text-yellow-600 px-2 py-1 rounded text-sm">中</span></td>
+              <td class="text-gray-600">日ごとの売上集計レポート</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">CSVエクスポート</td>
+              <td class="text-center"><span class="bg-yellow-100 text-yellow-600 px-2 py-1 rounded text-sm">中</span></td>
+              <td class="text-gray-600">データのCSV出力機能</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">検索機能強化</td>
+              <td class="text-center"><span class="bg-yellow-100 text-yellow-600 px-2 py-1 rounded text-sm">中</span></td>
+              <td class="text-gray-600">部分一致検索、複合条件検索</td>
+            </tr>
+            <tr class="border-b">
+              <td class="py-3">監査ログ</td>
+              <td class="text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-sm">低</span></td>
+              <td class="text-gray-600">操作履歴の記録</td>
+            </tr>
+            <tr>
+              <td class="py-3">モバイル最適化</td>
+              <td class="text-center"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-sm">低</span></td>
+              <td class="text-gray-600">スマートフォン向けUI</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 技術スタック -->
+    <div class="bg-white rounded-lg shadow mb-6">
+      <div class="bg-indigo-500 text-white px-6 py-3 rounded-t-lg">
+        <h2 class="text-xl font-bold">🛠️ 技術スタック</h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="bg-gray-50 p-4 rounded">
+            <p class="text-sm text-gray-500">フレームワーク</p>
+            <p class="font-medium">Next.js 15</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded">
+            <p class="text-sm text-gray-500">言語</p>
+            <p class="font-medium">TypeScript</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded">
+            <p class="text-sm text-gray-500">スタイリング</p>
+            <p class="font-medium">Tailwind CSS</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded">
+            <p class="text-sm text-gray-500">データベース</p>
+            <p class="font-medium">Cloudflare D1</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded">
+            <p class="text-sm text-gray-500">ORM</p>
+            <p class="font-medium">Prisma</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded">
+            <p class="text-sm text-gray-500">ホスティング</p>
+            <p class="font-medium">Cloudflare Pages</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- フッター -->
+    <div class="text-center text-gray-500 text-sm py-4">
+      <p>最終更新: 2024年12月17日</p>
+      <p class="mt-2">
+        <a href="https://github.com/atsunaricoda-maker/EC-kanri2" class="text-blue-500 hover:underline">GitHub リポジトリ</a>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>
