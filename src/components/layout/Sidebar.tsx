@@ -12,51 +12,54 @@ type MenuItem = {
 
 const menuItems: MenuItem[] = [
   {
-    name: '請求管理',
-    children: [
-      { name: '案件集計', href: '/billing/summary' },
-      { name: '請求書一覧', href: '/billing/invoices' },
-      { name: 'イレギュラー請求登録', href: '/billing/irregular' },
-    ],
+    name: 'ホーム',
+    href: '/',
   },
   {
-    name: 'WMSデータ登録',
-    href: '/wms/register',
-  },
-  {
-    name: '商品登録',
-    href: '/products/register',
-  },
-  {
-    name: '案件管理',
-    children: [
-      { name: '案件一覧', href: '/projects' },
-      { name: '案件登録', href: '/projects/register' },
-    ],
-  },
-  {
-    name: 'クライアント管理',
-    children: [
-      { name: 'クライアント一覧', href: '/clients' },
-      { name: 'クライアント登録', href: '/clients/register' },
-    ],
-  },
-  {
-    name: 'マスタ管理',
+    name: 'STEP1: マスタ管理',
     children: [
       { name: 'ECサイトマスタ', href: '/master/ec-sites' },
-      { name: '商品CSVマスタ', href: '/master/product-csv' },
       { name: '倉庫マスタ', href: '/master/warehouses' },
-      { name: 'WMS CSVマスタ', href: '/master/wms-csv' },
       { name: '請求区分マスタ', href: '/master/billing-categories' },
       { name: '請求項目マスタ', href: '/master/billing-items' },
+      { name: '商品CSVマスタ', href: '/master/product-csv' },
+      { name: 'WMS CSVマスタ', href: '/master/wms-csv' },
+    ],
+  },
+  {
+    name: 'STEP2: クライアント',
+    children: [
+      { name: 'クライアント一覧', href: '/clients' },
+      { name: '新規登録', href: '/clients/register' },
+    ],
+  },
+  {
+    name: 'STEP3: 案件',
+    children: [
+      { name: '案件一覧', href: '/projects' },
+      { name: '新規登録', href: '/projects/register' },
+    ],
+  },
+  {
+    name: 'STEP4: データ取込',
+    children: [
+      { name: '商品データ（CSV）', href: '/products/register' },
+      { name: 'WMSデータ（CSV）', href: '/wms/register' },
+    ],
+  },
+  {
+    name: 'STEP5: 請求管理',
+    children: [
+      { name: '請求書作成', href: '/billing/summary' },
+      { name: '請求書一覧', href: '/billing/invoices' },
+      { name: 'イレギュラー請求', href: '/billing/irregular' },
     ],
   },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
-  const [openMenus, setOpenMenus] = useState<string[]>(['請求管理', '案件管理', 'クライアント管理', 'マスタ管理'])
+  const [openMenus, setOpenMenus] = useState<string[]>(['STEP1: マスタ管理', 'STEP2: クライアント', 'STEP3: 案件', 'STEP4: データ取込', 'STEP5: 請求管理'])
 
   const toggleMenu = (name: string) => {
     setOpenMenus(prev =>
